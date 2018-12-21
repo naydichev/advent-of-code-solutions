@@ -1,0 +1,73 @@
+#!/usr/bin/python
+
+opcodes = dict(
+    addr=lambda a, b, r: r[a] + r[b],
+    addi=lambda a, b, r: r[a] + b,
+    mulr=lambda a, b, r: r[a] * r[b],
+    muli=lambda a, b, r: r[a] * b,
+    banr=lambda a, b, r: r[a] & r[b],
+    bani=lambda a, b, r: r[a] & b,
+    borr=lambda a, b, r: r[a] | r[b],
+    bori=lambda a, b, r: r[a] | b,
+    setr=lambda a, b, r: r[a],
+    seti=lambda a, b, r: a,
+    gtir=lambda a, b, r: 1 if a > r[b] else 0,
+    gtri=lambda a, b, r: 1 if r[a] > b else 0,
+    gtrr=lambda a, b, r: 1 if r[a] > r[b] else 0,
+    eqir=lambda a, b, r: 1 if a == r[b] else 0,
+    eqri=lambda a, b, r: 1 if r[a] == b else 0,
+    eqrr=lambda a, b, r: 1 if r[a] == r[b] else 0,
+)
+
+def main():
+    with open("halting.pi") as f:
+        raw = f.read().split("\n")
+
+    ip_register = int(raw[0].split(" ")[1])
+    instructions = parse(raw[1:])
+
+    registers = execute_program(ip_register, instructions)
+
+    if registers is not None:
+        print("the value of register 0 is {}".format(registers[0]))
+
+def execute_program(ip_register, instructions):
+    r = [0] * 6
+    ip = r[ip_register]
+    seen = set()
+    prev = None
+
+    while ip < len(instructions):
+        r[ip_register] = ip
+
+        current_instruction = instructions[ip]
+        opcode = list(current_instruction.keys())[0]
+        values = current_instruction[opcode]
+        if ip == 28 and r[4] in seen:
+            print("we've seen {} numbers".format(len(seen)))
+            print("found a duplicate: {}".format(r[4]))
+            print("answer should be {}".format(prev))
+            break
+        elif  ip == 28:
+            seen.add(r[4])
+            prev = r[4]
+
+        r[values[-1]] = opcodes[opcode](values[0], values[1], r)
+
+        ip = r[ip_register]
+        ip += 1
+
+    return r
+
+def parse(raw):
+    instructions = []
+    for row in raw:
+        parts = row.split(" ")
+        inst = dict()
+        inst[parts[0]] = [int(i) for i in parts[1:]]
+        instructions.append(inst)
+
+    return instructions
+
+if __name__ == "__main__":
+    main()
