@@ -16,10 +16,13 @@ IP_COUNT = {
     99: 1
 }
 
+
 MODES = [
     lambda addr, instr: instr[addr],
     lambda addr, instr: addr
 ]
+
+
 def value_for_mode(mode, ip, inst):
     if mode == 1:
         return inst[ip]
@@ -104,19 +107,21 @@ OP = {
 
 
 def main(instructions, inputs=[1]):
-    i = 0
+    ip = 0
 
-    while i < len(instructions):
-        mode_and_opcode = instructions[i]
-        modes, opcode = decode_opcode(mode_and_opcode)
+    while ip < len(instructions):
+        modes, opcode = decode_opcode(instructions[ip])
+
         n = IP_COUNT[opcode]
-        print(f"{i:04} - executing opcode {opcode:02}, with modes {modes} - {instructions[i:i + n]}")
-        out = instructions[i + n - 1]
-        value = OP[opcode](modes, i, instructions, inputs)
+
+        print(f"{ip:04} - executing opcode {opcode:02}, with modes {modes} - {instructions[ip:ip + n]}")
+
+        value = OP[opcode](modes, ip, instructions, inputs)
+
         if value is None:
-            i += n
+            ip += n
         else:
-            i = value
+            ip = value
 
 
 def decode_opcode(data):
