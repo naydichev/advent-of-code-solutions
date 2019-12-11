@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from collections import defaultdict, namedtuple
-from queue import Queue
+from queue import Queue, Empty
 from threading import Thread
 
 InstructionOutput = namedtuple("InstructionOutput", ["ip", "output", "halt", "rb"], defaults=[None, None, False, None])
@@ -10,18 +10,12 @@ BLACK  = '\33[40m'
 WHITE  = '\33[47m'
 END    = '\33[0m'
 
-IP_COUNT = {
-    1: 4,
-    2: 4,
-    3: 2,
-    4: 2,
-    5: 3,
-    6: 3,
-    7: 4,
-    8: 4,
-    9: 2,
-    99: 1
-}
+DEBUG = True
+
+
+def dprint(data):
+    if DEBUG:
+        print(data)
 
 
 def value_for_mode(mode, ip, inst, rb):
@@ -34,6 +28,7 @@ def value_for_mode(mode, ip, inst, rb):
     except:
         return 0
 
+
 def ip_for_writing(mode, ip, inst, rb):
     try:
         if mode == 1:
@@ -44,6 +39,7 @@ def ip_for_writing(mode, ip, inst, rb):
         return inst[ip]
     except:
         return 0
+
 
 def write_value(value, ip, inst):
     if ip >= len(inst):
@@ -73,7 +69,7 @@ def mult(modes, ip, inst, _, rb):
 def read_input(modes, ip, inst, data, rb):
     value = data.get()
     a = ip_for_writing(modes[-1], ip + 1, inst, rb)
-    print(f"<<< {value}")
+    dprint(f"<<< {value}")
     write_value(value, a, inst)
     data.task_done()
 
@@ -82,7 +78,7 @@ def read_input(modes, ip, inst, data, rb):
 
 def output(modes, ip, inst, _, rb):
     value = value_for_mode(modes[-1], ip + 1, inst, rb)
-    print(f">>> {value}")
+    dprint(f">>> {value}")
 
     return InstructionOutput(output=value)
 
@@ -134,9 +130,22 @@ def adjust_relative_base(modes, ip, inst, _, rb):
     return InstructionOutput(rb=new_base)
 
 
-def halt(_, __, inst, ___, ____):
+def halt(*args):
     return InstructionOutput(halt=True)
 
+
+IP_COUNT = {
+    1: 4,
+    2: 4,
+    3: 2,
+    4: 2,
+    5: 3,
+    6: 3,
+    7: 4,
+    8: 4,
+    9: 2,
+    99: 1
+}
 
 OP = {
     1: add,
@@ -161,7 +170,7 @@ MOVE = {
 }
 
 
-def main(instructions, inputs=[1]):
+def main(instructions):
     input_queue = Queue()
     output_queue = Queue()
 
@@ -178,8 +187,12 @@ def main(instructions, inputs=[1]):
         input_queue.put(panel[x][y])
 
         # get our next paint and move task
-        color = output_queue.get(1)
-        output_queue.task_done()
+        try:
+            color = output_queue.get(timeout=1)
+            output_queue.task_done()
+        except Empty:
+            break
+
         move_dir = output_queue.get()
         output_queue.task_done()
 
@@ -191,6 +204,8 @@ def main(instructions, inputs=[1]):
             direction = DIRECTION[dir_index - 1]
 
         x, y = MOVE[direction](x, y)
+
+    thread.join()
 
     min_x = min(panel.keys())
     max_x = max(panel.keys())
@@ -218,7 +233,7 @@ def run_program(instructions, input_queue, output_queue):
 
         n = IP_COUNT[opcode]
 
-        print(f"{ip:04} - executing opcode {opcode:02}, with modes [RB: {relative_base:04}] {modes} - {instructions[ip:ip + n]}")
+        dprint(f"{ip:04} - executing opcode {opcode:02}, with modes [RB: {relative_base:04}] {modes} - {instructions[ip:ip + n]}")
 
         output = OP[opcode](modes, ip, instructions, input_queue, relative_base)
 
