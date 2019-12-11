@@ -7,20 +7,6 @@ from threading import Thread
 InstructionOutput = namedtuple("InstructionOutput", ["ip", "output", "halt", "rb"], defaults=[None, None, False, None])
 
 
-IP_COUNT = {
-    1: 4,
-    2: 4,
-    3: 2,
-    4: 2,
-    5: 3,
-    6: 3,
-    7: 4,
-    8: 4,
-    9: 2,
-    99: 1
-}
-
-
 def value_for_mode(mode, ip, inst, rb):
     try:
         if mode == 1:
@@ -30,6 +16,7 @@ def value_for_mode(mode, ip, inst, rb):
         return inst[inst[ip]]
     except:
         return 0
+
 
 def ip_for_writing(mode, ip, inst, rb):
     try:
@@ -41,6 +28,7 @@ def ip_for_writing(mode, ip, inst, rb):
         return inst[ip]
     except:
         return 0
+
 
 def write_value(value, ip, inst):
     if ip >= len(inst):
@@ -68,7 +56,6 @@ def mult(modes, ip, inst, _, rb):
 
 
 def read_input(modes, ip, inst, data, rb):
-    print("waiting for input")
     value = data.get()
     a = ip_for_writing(modes[-1], ip + 1, inst, rb)
     print(f"<<< {value}")
@@ -132,9 +119,22 @@ def adjust_relative_base(modes, ip, inst, _, rb):
     return InstructionOutput(rb=new_base)
 
 
-def halt(_, __, inst, ___, ____):
+def halt(*args):
     return InstructionOutput(halt=True)
 
+
+IP_COUNT = {
+    1: 4,
+    2: 4,
+    3: 2,
+    4: 2,
+    5: 3,
+    6: 3,
+    7: 4,
+    8: 4,
+    9: 2,
+    99: 1
+}
 
 OP = {
     1: add,
@@ -159,7 +159,7 @@ MOVE = {
 }
 
 
-def main(instructions, inputs=[1]):
+def main(instructions):
     input_queue = Queue()
     output_queue = Queue()
 
