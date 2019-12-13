@@ -206,6 +206,26 @@ def find_position(panel, symbol):
     return None
 
 
+def draw_board(panel, score):
+    max_y = max(panel.keys())
+    max_x = max([max(x) for x in panel.values()])
+    print("\033[2J", flush=False)
+    for y in range(max_y):
+        line = []
+        for x in range(max_x):
+            line.append(D[panel[y][x]])
+
+        if line[-1] != WALL:
+            line.append(D[WALL])
+        print("".join(line), flush=False)
+
+    score_pad = " " * ((max_x - 5) // 2)
+    print(f"{D[WALL]}" * (max_x + 1) + RESET, flush=False)
+    print(f"{D[WALL]}{BG_WHITE}{score_pad}{FG_RED}{score:05}{RESET}{BG_WHITE}{score_pad}{D[WALL]}{RESET}", flush=False)
+    print(f"{D[WALL]}" * (max_x + 1) + RESET, flush=True)
+    time.sleep(.009)
+
+
 def run_program(instructions):
     # save cursor position
     ip = 0
@@ -243,6 +263,9 @@ def run_program(instructions):
                     score = tile
                 else:
                     panel[y][x] = tile
+
+                    if tile == BALL or tile == PADDLE:
+                        draw_board(panel, score)
 
         if output.rb is not None:
             relative_base = output.rb
