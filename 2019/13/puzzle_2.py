@@ -209,7 +209,9 @@ def find_position(panel, symbol):
 def draw_board(panel, score):
     max_y = max(panel.keys())
     max_x = max([max(x) for x in panel.values()])
-    print("\033[2J", flush=False)
+    print("\033[2J")
+    time.sleep(.0003)
+    output = ["",""]
     for y in range(max_y):
         line = []
         for x in range(max_x):
@@ -217,12 +219,15 @@ def draw_board(panel, score):
 
         if line[-1] != WALL:
             line.append(D[WALL])
-        print("".join(line), flush=False)
+        output.append("".join(line))
 
     score_pad = " " * ((max_x - 5) // 2)
-    print(f"{D[WALL]}" * (max_x + 1) + RESET, flush=False)
-    print(f"{D[WALL]}{BG_WHITE}{score_pad}{FG_RED}{score:05}{RESET}{BG_WHITE}{score_pad}{D[WALL]}{RESET}", flush=False)
-    print(f"{D[WALL]}" * (max_x + 1) + RESET, flush=True)
+    separator = D[WALL] * (max_x + 1) + RESET
+    output.append(separator)
+    output.append(f"{D[WALL]}{BG_WHITE}{score_pad}{FG_RED}{score:05}{RESET}{BG_WHITE}{score_pad}{D[WALL]}{RESET}")
+    output.append(separator)
+    output.extend([""] * 4)
+    print("\n".join(output))
     time.sleep(.009)
 
 
