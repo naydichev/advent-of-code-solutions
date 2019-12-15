@@ -2,7 +2,6 @@
 
 from collections import defaultdict, namedtuple
 from threading import Thread
-from intcode import run_program
 
 Point = namedtuple("Point", ["x", "y"])
 
@@ -163,5 +162,11 @@ def find_path(ship, position, target, moves=[], visited=set()):
 
 
 if __name__ == "__main__":
+    from sys import path
+    from os.path import dirname as dir
+
+    path.append(dir(path[0]))
+    __package__ = "aoc.15"
+    from intcode import run_program
     with open("program.pi") as f:
         main([int(i) for i in f.read().rstrip().split(",")])
