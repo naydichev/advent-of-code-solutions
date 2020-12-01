@@ -110,3 +110,4 @@ venv.bak/
 *.swo
 .DS_Store
 .idea/
+other.py
