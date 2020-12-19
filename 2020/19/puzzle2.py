@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from collections import namedtuple
-import re
+import regex
 
 SUBLIST = "sublist"
 CHARACTER = "character"
@@ -13,8 +13,7 @@ def main():
     with open("messages.pi") as f:
         rules, messages = parse(f.readlines())
 
-    regex = f"^{build_regex(rules, rules[0])}$"
-    pattern = re.compile(regex)
+    pattern = regex.compile(f"^{build_regex(rules, rules[0])}$")
     valid = len(list(filter(lambda v: pattern.fullmatch(v) is not None, messages)))
 
     print(f"there are {valid} valid messages")
@@ -38,7 +37,7 @@ def build_regex(rules, rule):
             elif index == 11:
                 r42 = build_regex(rules, rules[42])
                 r31 = build_regex(rules, rules[31])
-                regex.append(f"({r42}({r42}({r42}({r42}{r31})?{r31})?{r31})?{r31})")
+                regex.append(f"(?P<eleven>{r42}{r31}|{r42}(?&eleven){r31})")
             else:
                 regex.append(build_regex(rules, rules[index]))
         return f"({''.join(regex)})"
