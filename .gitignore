@@ -105,6 +105,7 @@ venv.bak/
 
 # puzzle input
 *.pi
+*.aoc
 
 *.swp
 *.swo
