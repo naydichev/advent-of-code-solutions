@@ -2,6 +2,9 @@
 import argparse
 import requests
 import os, os.path
+import textwrap
+
+from subprocess import call
 
 
 def main(args):
@@ -35,6 +38,37 @@ def main(args):
 
     if args.open:
         os.system(f"open {event_url}")
+
+        with open(f"{destination}/puzzle1.py", "w") as f:
+            template = """\
+            #!/usr/bin/env python3
+
+
+            def main():
+                data = parse_input()
+
+                print(data)
+
+
+            def parse_input():
+                with open("input.aoc") as f:
+                    data = [x.strip() for x in f.readlines()]
+
+                # process data
+                processed = data
+
+                return processed
+
+
+            if __name__ == "__main__":
+                main()"""
+
+            f.write(textwrap.dedent(template))
+
+
+        os.chdir(destination)
+
+        call(["vim", "puzzle1.py"])
 
 
 def parse_args():
