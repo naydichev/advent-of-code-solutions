@@ -39,36 +39,16 @@ def main(args):
     if args.open:
         os.system(f"open {event_url}")
 
-        with open(f"{destination}/puzzle1.py", "w") as f:
-            template = """\
-            #!/usr/bin/env python3
+        filename = "puzzle.{ext}".format(ext=LANG_CONFIG[args.lang]["ext"])
+        with open(f"{destination}/{filename}", "w") as f:
+
+            f.write(textwrap.dedent(LANG_CONFIG[args.lang]["template"]))
 
 
-            def main():
-                data = parse_input()
-
-                print(data)
-
-
-            def parse_input():
-                with open("input.aoc") as f:
-                    data = [x.strip() for x in f.readlines()]
-
-                # process data
-                processed = data
-
-                return processed
-
-
-            if __name__ == "__main__":
-                main()"""
-
-            f.write(textwrap.dedent(template))
-
-
+        os.system(f"chmod +x {filename}")
         os.chdir(destination)
 
-        call(["vim", "puzzle1.py"])
+        call(["vim", filename])
 
 
 def parse_args():
@@ -78,6 +58,7 @@ def parse_args():
     parser.add_argument("--day", "-d", type=int, help="Which day to get the input for, defaults to 'today'")
     parser.add_argument("--year", "-y", type=int, help="Which year to get the input for, defaults to 'this year'")
     parser.add_argument("--open", "-o", action="store_true", help="Whether or not to open the URL")
+    parser.add_argument("--lang", "-l", choices=["python","typescript"], default="python", help="What language to use for the template")
 
     args = parser.parse_args()
 
@@ -111,6 +92,62 @@ def fill_in_default_args(args):
         args.aoc_path = "~/Projects/advent-of-code-solutions"
 
     args.aoc_path = os.path.expanduser(args.aoc_path)
+
+
+TYPESCRIPT_TEMPLATE = """\
+#!bun
+
+import * as fs from "fs";
+
+async function main(args) {
+    console.log(args);
+}
+
+async function loadPuzzle() {
+    const data = fs.readFileSync("input.aoc", "utf8")
+        .split("\\n")
+        .map(s => s.trim());
+
+    const processed = data;
+
+    return processed;
+}
+
+await main({ data: await loadPuzzle() })"""
+
+PYTHON_TEMPLATE = """\
+#!/usr/bin/env python3
+
+
+def main():
+    data = parse_input()
+
+    print(data)
+
+
+def parse_input():
+    with open("input.aoc") as f:
+        data = [x.strip() for x in f.readlines()]
+
+    # process data
+    processed = data
+
+    return processed
+
+
+if __name__ == "__main__":
+    main()"""
+
+LANG_CONFIG = {
+    "python": {
+        "template": PYTHON_TEMPLATE,
+        "ext": "py",
+    },
+    "typescript": {
+        "template": TYPESCRIPT_TEMPLATE,
+        "ext": "ts",
+    },
+}
 
 
 if __name__ == "__main__":
