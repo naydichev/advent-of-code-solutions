@@ -45,7 +45,7 @@ def main(args):
             f.write(textwrap.dedent(LANG_CONFIG[args.lang]["template"]))
 
 
-        os.system(f"chmod +x {filename}")
+        os.system(f"chmod +x {destination}/{filename}")
         os.chdir(destination)
 
         call(["vim", filename])
@@ -104,7 +104,7 @@ async function main(args) {
 }
 
 async function loadPuzzle() {
-    const data = fs.readFileSync("input.aoc", "utf8")
+    const data = fs.readFileSync(`${__dirname}/input.aoc`, "utf8")
         .split("\\n")
         .map(s => s.trim());
 

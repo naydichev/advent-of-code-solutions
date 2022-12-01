@@ -28,7 +28,7 @@ function solvePuzzle(data, size = 1) {
 }
 
 async function loadPuzzle() {
-  const data = await fs.readFileSync("input.aoc", "utf8")
+  const data = await fs.readFileSync(`${__dirname}/input.aoc`, "utf8")
   .split("\n")
   .map(s => s.trim());
 
