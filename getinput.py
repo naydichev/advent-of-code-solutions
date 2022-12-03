@@ -99,18 +99,28 @@ TYPESCRIPT_TEMPLATE = """\
 
 import * as fs from "fs";
 
+const USE_SAMPLE_DATA = process.argv[2] === "sample";
+
 async function main(args) {
-    console.log(args);
+  console.log(args);
 }
 
 async function loadPuzzle() {
-    const data = fs.readFileSync(`${__dirname}/input.aoc`, "utf8")
-        .split("\\n")
-        .map(s => s.trim());
+  const sampleData = `
+  > DATA HERE <
+  `;
+  const data = (
+    USE_SAMPLE_DATA ?
+    sampleData :
+    fs.readFileSync(`${__dirname}/input.aoc`, "utf8")
+  )
+    .trim()
+    .split("\\n")
+    .map(s => s.trim());
 
-    const processed = data;
+  const processed = data;
 
-    return processed;
+  return processed;
 }
 
 await main({ data: await loadPuzzle() })"""
