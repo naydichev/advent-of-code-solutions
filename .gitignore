@@ -112,3 +112,5 @@ venv.bak/
 .DS_Store
 .idea/
 other.py
+other.js
+other.ts
