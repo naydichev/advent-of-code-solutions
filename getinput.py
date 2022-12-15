@@ -102,7 +102,14 @@ import * as fs from "fs";
 const USE_SAMPLE_DATA = process.argv[2] === "sample";
 
 async function main(args) {
-  console.log(args);
+  console.log(`Part One: ${solvePuzzle(args.data)}`);
+  console.log(`Part Two: ${solvePuzzle(args.data, true)}`);
+}
+
+function solvePuzzle(data, partTwo = false) {
+  if (partTwo) { return ; }
+
+  console.log(data);
 }
 
 async function loadPuzzle() {
