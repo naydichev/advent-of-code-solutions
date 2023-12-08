@@ -13,7 +13,6 @@ function solvePuzzle(data, partTwo = false) {
   const [steps, map] = parseData(data);
 
   if (!partTwo) {
-    return;
     return findWayHomePartOne(steps, map);
   }
 
