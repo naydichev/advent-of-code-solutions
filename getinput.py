@@ -58,7 +58,7 @@ def parse_args():
     parser.add_argument("--day", "-d", type=int, help="Which day to get the input for, defaults to 'today'")
     parser.add_argument("--year", "-y", type=int, help="Which year to get the input for, defaults to 'this year'")
     parser.add_argument("--open", "-o", action="store_true", help="Whether or not to open the URL")
-    parser.add_argument("--lang", "-l", choices=["python","typescript"], default="python", help="What language to use for the template")
+    parser.add_argument("--lang", "-l", choices=["python","typescript", "golang"], default="python", help="What language to use for the template")
 
     args = parser.parse_args()
 
@@ -155,6 +155,18 @@ def parse_input():
 if __name__ == "__main__":
     main()"""
 
+GOLANG_TEMPLATE = """\
+package main
+
+import (
+    "fmt"
+)
+
+func main() {
+    fmt.Println("Hello, world")
+}
+"""
+
 LANG_CONFIG = {
     "python": {
         "template": PYTHON_TEMPLATE,
@@ -163,6 +175,10 @@ LANG_CONFIG = {
     "typescript": {
         "template": TYPESCRIPT_TEMPLATE,
         "ext": "ts",
+    },
+    "golang": {
+        "template": GOLANG_TEMPLATE,
+        "ext": "go",
     },
 }
 
