@@ -165,11 +165,23 @@ import (
 )
 
 const INPUT_FILE = "input.aoc"
-var DEBUG = os.Getenv("DEBUG") == "true"
-var USE_SAMPLE = os.Getenv("SAMPLE") == "true"
+var DEBUG = false
+var USE_SAMPLE = false
 
 var sample = `
 `
+
+func dbg(args... any) {
+	if (DEBUG) {
+		fmt.Println(args...)
+	}
+}
+
+func dbgf(format string, args... any) {
+	if (DEBUG) {
+		fmt.Printf(format, args...)
+	}
+}
 
 func puzzleInput() (string, error) {
 	if USE_SAMPLE {
@@ -194,6 +206,9 @@ func solvePuzzle(data string, isPartTwo bool) any {
 }
 
 func main() {
+	DEBUG = slices.Contains(os.Args, "debug")
+	USE_SAMPLE = slices.Contains(os.Args, "sample")
+
 	data, err := puzzleInput()
 	if err != nil {
 		panic(err)
