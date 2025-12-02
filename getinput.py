@@ -159,11 +159,51 @@ GOLANG_TEMPLATE = """\
 package main
 
 import (
-    "fmt"
+	"fmt"
+	"os"
+	"strings"
 )
 
+const INPUT_FILE = "input.aoc"
+var DEBUG = os.Getenv("DEBUG") == "true"
+var USE_SAMPLE = os.Getenv("SAMPLE") == "true"
+
+var sample = `
+`
+
+func puzzleInput() (string, error) {
+	if USE_SAMPLE {
+		return sample, nil
+	}
+
+	data, err := os.ReadFile(INPUT_FILE)
+	if err != nil {
+		return "", err
+	}
+
+	return string(data), nil
+}
+
+func solvePuzzle(data string, isPartTwo bool) any {
+	fmt.Println("input data: ", data)
+	if isPartTwo {
+		return nil
+	} else {
+		return nil
+	}
+}
+
 func main() {
-    fmt.Println("Hello, world")
+	data, err := puzzleInput()
+	if err != nil {
+		panic(err)
+	}
+
+	data = strings.Trim(data, " \\n")
+
+	fmt.Println("Part 1:", solvePuzzle(data, false))
+	fmt.Println("Part 2:", solvePuzzle(data, true))
+
 }
 """
 
